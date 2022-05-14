@@ -27,9 +27,7 @@ export class AuthenticateController {
         username,
         password,
       );
-
       console.log('token: ', token);
-
       return {
         access_token: token 
       };
