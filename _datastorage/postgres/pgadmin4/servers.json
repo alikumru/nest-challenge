@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Foreside",
+      "Group": "Servers",
+      "Port": 5432,
+      "Username": "develop",
+      "Host": "foreside-boilerplate-postgres-db",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres"
+    }
+  }
+}

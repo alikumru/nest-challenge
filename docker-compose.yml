@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14.1-alpine
+    container_name: foreside-boilerplate-postgres-db
+    volumes:
+      - './_datastorage/postgres/scripts:/docker-entrypoint-initdb.d'
+      - './_datastorage/postgres/data:/var/lib/postgresql/data'
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=develop
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    networks:
+      - foreside-boilerplate
+      - foreside-boilerplate-datastorage
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: foreside-boilerplate-pgadmin
+    volumes:
+      - ./_datastorage/postgres/pgadmin4/servers.json:/pgadmin4/servers.json
+    ports:
+      - 8080:80
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@foreside.dev
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    networks:
+      - foreside-boilerplate-datastorage
+
+networks:
+  foreside-boilerplate:
+    driver: bridge
+  foreside-boilerplate-datastorage:
+    driver: bridge
