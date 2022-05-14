@@ -2,7 +2,7 @@ import { AuthenticateService } from './authenticate.service';
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthenticateUserByPasswordRequestDTO } from './authenticate.dto';
 import { ConfigService } from '@nestjs/config';
-import { Response_AuthToken } from '../../model/AuthTokenResponse';
+import { Response_AuthToken } from '../../model/auth.token.response';
 
 @Controller('authenticate')
 export class AuthenticateController {

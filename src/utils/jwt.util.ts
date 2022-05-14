@@ -1,8 +1,8 @@
 import { User } from '../entities/user.entity';
 import * as jwt from 'jsonwebtoken';
 
-const DEFAULT_EXPIRY_TIME = 90;
-const DEFAULT_JWT_SECRET_STRING = 'myRandomS3cr3t';
+export const DEFAULT_EXPIRY_TIME = 90;
+export const DEFAULT_JWT_SECRET_STRING = 'myRandomS3cr3t';
 
 export const signToken = async (
   user: User,

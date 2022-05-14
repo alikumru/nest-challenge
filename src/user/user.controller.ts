@@ -1,8 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Request,UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GetUserByIdDto } from '../dtos/user.dto';
 import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
+import { JwtAuthGuard } from './authenticate/guards/jwt-auth.guard';
 
 @Controller()
 export class UserController {
@@ -43,7 +44,8 @@ export class UserController {
    * @returns User
    */
   @Get('user/me')
-  findLoggedinUser(): string {
-    return 'not implemented';
+  @UseGuards(JwtAuthGuard)
+  findLoggedinUser(@Request() request): string {
+    return request.user;
   }
 }
