@@ -2,6 +2,10 @@ import * as argon2 from 'argon2';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { EntityRepository, Repository } from 'typeorm';
+import { ChangePasswordDto } from 'src/dtos/password.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { User } from 'src/entities/user.entity';
+
 import {
   DEFAULT_HASH_ALGORITHM,
   Password,
@@ -161,5 +165,126 @@ export class PasswordRepository extends Repository<Password> {
       }
     }
     return verify;
+  }
+
+  async checkLastThreePasswords(newPassword: string, user: User): Promise<boolean> {
+
+    let isSame: boolean | PromiseLike<boolean> = false;
+    const lastThreePasswords = await this.manager.find(Password,
+      {
+        where: { user: user, hash_algorithm: DEFAULT_HASH_ALGORITHM },
+        order: { created_at: 'DESC' },
+        take: 3
+      }
+    );
+
+    for (const pass in lastThreePasswords) {
+      if (isSame == false) 
+       isSame = await this.verifyPassword(newPassword, lastThreePasswords[pass]);
+      else 
+        return isSame;
+    }
+    return isSame;
+  }
+
+  async getUserPasswords(
+    user: User
+  ): Promise<Object> {
+
+    const allPasswords = await this.manager.find(Password,
+      {
+        where: { user: user },
+        order: { created_at: 'DESC' },
+      }
+    );
+    return allPasswords
+  }
+
+  public async changePassword(
+    changePasswordDto: ChangePasswordDto,
+    user: User
+  ): Promise<boolean> {
+    const correlationId = uuidv4();
+
+    const currentPassword = await this.updateCurrentPassword(user);
+    // Check if updating process of the old passwords is success
+    if (currentPassword) false;
+
+    const addingNewPasswords = await this.insertUserPasswords(changePasswordDto, currentPassword, user, correlationId); 
+    // Check if adding process of the new passwords is success
+    if (!addingNewPasswords) return false
+
+    return true;
+  }
+
+  async updateCurrentPassword(
+    user: User
+  ): Promise<Password[]> {
+
+    // Get old and unarchived passwords
+    const oldPasswords = await this.manager.find(Password,
+      {
+        where: { user: user, archived: false }
+      }
+    );
+
+    try {
+      //Update status and archive columns of all old passwords  
+      oldPasswords.forEach((passwords) => {
+        passwords.status = PasswordStatus.INACTIVE;
+        passwords.archived = true
+      });
+      
+    } catch (error) {
+      return null
+    }
+    return oldPasswords
+  }
+
+  async insertUserPasswords(
+    changePasswordDto: ChangePasswordDto,
+    currentPasswords: Password[],
+    user: User,
+    correlationId: string
+  ): Promise<boolean> {
+
+    const newPasswords: Password[] = [];
+    for (const key in PASSWORD_HASH_ALGORIHTM) {
+      const passwordObj = await this.createPasswordObject(
+        changePasswordDto.newPassword,
+        PASSWORD_HASH_ALGORIHTM[key],
+      );
+      // Add the password to the passwords array with user
+      newPasswords.push(
+        this.create({
+          ...passwordObj,
+          correlation_id: correlationId,
+          user: user
+        }),
+      );
+    }
+
+    try {
+      await this.saveNewPassword(currentPasswords, newPasswords);
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  async saveNewPassword(
+    currentPasswords: Password[],
+    userNewPasswords: Password[]
+  ): Promise<boolean> {
+
+    try {
+      await this.manager.transaction(async entityManager => {
+        await entityManager.save(currentPasswords);
+        await entityManager.save(userNewPasswords);
+      });
+    } catch (error) {
+      return false;
+    }
+    return true;
   }
 }
