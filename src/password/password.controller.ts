@@ -1,10 +1,10 @@
-import { Controller ,Post,Get, Request, UseGuards, Body} from '@nestjs/common';
+import { Controller ,Post,Get, Request, UseGuards, Body,Param} from '@nestjs/common';
 import { JwtAuthGuard } from '../user/authenticate/guards/jwt-auth.guard';
-import { ChangePasswordDto } from '../dtos/password.dto';
+import { ChangePasswordDto, ChangeAlgorithmDto } from '../dtos/password.dto';
 import { PasswordService } from './password.service';
 
 @Controller('password')
-export class PasswordController {x
+export class PasswordController {
 
     constructor(
         private readonly passwordService: PasswordService,
@@ -28,6 +28,16 @@ export class PasswordController {x
     getAllPasswords(@Request() req): Promise<Object> {
         try {
             return this.passwordService.getAllPasswords(req.user);
+        } catch (error) {
+            console.error('Error while getting all passwords:',error);
+        }
+   }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('changeHashAlgorithm')
+    changeHashAlgorithm(@Body() body: ChangeAlgorithmDto, @Request() req): Promise<Object> {
+        try {
+            return this.passwordService.changeHashAlgorithm(body,req.user);
         } catch (error) {
             console.error('Error while getting all passwords:',error);
         }

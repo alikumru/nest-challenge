@@ -2,9 +2,10 @@ import * as argon2 from 'argon2';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { EntityRepository, Repository } from 'typeorm';
-import { ChangePasswordDto } from 'src/dtos/password.dto';
+import { ChangePasswordDto,ChangeAlgorithmDto } from 'src/dtos/password.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { User } from 'src/entities/user.entity';
+import { Response } from '../model/response';
 
 import {
   DEFAULT_HASH_ALGORITHM,
@@ -199,6 +200,34 @@ export class PasswordRepository extends Repository<Password> {
     );
     return allPasswords
   }
+
+  async changeHashAlgorithm(
+    changeAlgorithmDto : ChangeAlgorithmDto,
+    user: User
+  ): Promise<Response> {
+
+    const currentPassword = await this.manager.find(Password,
+      {
+        where: { user: user , archived: false}
+      }
+    );
+
+    currentPassword.forEach(pass => {
+      if(pass.hash_algorithm == changeAlgorithmDto.algorithm){
+        pass.status = PasswordStatus.ACTIVE;;
+      }else{
+        pass.status = PasswordStatus.INACTIVE;
+      }
+    })
+
+    try {
+      await this.manager.save(currentPassword);
+    } catch (error) {
+      throw new Error(`Error while updating hash algorithm: ${error}`);
+    }
+    return {message:'hashing algorithm change is successfull!'};
+  }
+  
 
   public async changePassword(
     changePasswordDto: ChangePasswordDto,

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, Matches,IsIn } from 'class-validator';
 import { PasswordRegex } from '../constants/app.constants';
 
 export class ChangePasswordDto {
@@ -18,3 +18,11 @@ export class ChangePasswordDto {
     public confirmPassword!: string;
 }
   
+export class ChangeAlgorithmDto {
+
+  @IsNotEmpty()
+  @IsString()
+  @IsIn(['bcrypt', 'scrypt','argon2id'],
+  {message:'Please enter a valid hashing algorithm'} )
+  public algorithm!: string;
+}

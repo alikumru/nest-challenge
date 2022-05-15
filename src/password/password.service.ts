@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PasswordRepository } from '../repositories/password.repository';
 import { UserRepository } from '../repositories/user.repository';
 import { getCustomRepository } from 'typeorm';
-import { ChangePasswordDto } from '../dtos/password.dto';
+import { ChangePasswordDto,ChangeAlgorithmDto } from '../dtos/password.dto';
+import { Response } from '../model/response';
 
 @Injectable()
 export class PasswordService {
@@ -45,6 +46,10 @@ export class PasswordService {
     
       async getAllPasswords(user: User): Promise<Object> {
         return await this.passwordRepository.getUserPasswords(user);
+      }
+
+      async changeHashAlgorithm(changeAlgorithmDto : ChangeAlgorithmDto,user: User): Promise<Response> {
+        return await this.passwordRepository.changeHashAlgorithm(changeAlgorithmDto,user);
       }
 
     }
