@@ -12,7 +12,7 @@ export class PasswordController {
 
     @UseGuards(JwtAuthGuard)
     @Post('changePassword')
-    findLoggedinUser(@Body() body: ChangePasswordDto, @Request() req): Promise<boolean> {
+    changePassword(@Body() body: ChangePasswordDto, @Request() req): Promise<boolean> {
         try {
             if(!req.user.id){
                 //throw user id not found
