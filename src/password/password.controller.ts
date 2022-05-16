@@ -1,4 +1,4 @@
-import { Controller ,Post,Get, Request, UseGuards, Body,Param} from '@nestjs/common';
+import { Controller ,Post,Get, Request, UseGuards, Body} from '@nestjs/common';
 import { JwtAuthGuard } from '../user/authenticate/guards/jwt-auth.guard';
 import { ChangePasswordDto, ChangeAlgorithmDto } from '../dtos/password.dto';
 import { PasswordService } from './password.service';

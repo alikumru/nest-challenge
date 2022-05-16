@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Request,UseGuards } from '@nestjs/common';
+import { Controller, Get, Param,Post, Request,UseGuards, Body } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GetUserByIdDto } from '../dtos/user.dto';
 import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from './authenticate/guards/jwt-auth.guard';
+import { UserSignUpDto } from '../dtos/user.signup.dto';
 
 @Controller()
 export class UserController {
@@ -47,4 +48,13 @@ export class UserController {
   findLoggedinUser(@Request() request): string {
     return request.user;
   }
+
+  @Post('user/signup')
+  signup(@Body() body: UserSignUpDto, @Request() req): Promise<Object> {
+        try {
+            return this.userService.createNewUser(body);
+        } catch (error) {
+            console.error('Error while getting all passwords:',error);
+        }
+   }
 }

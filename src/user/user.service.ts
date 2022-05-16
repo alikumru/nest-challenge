@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { UserRepository } from '../repositories/user.repository';
 import { UserException } from '../exception/user.exception';
+import { UserSignUpDto } from '../dtos/user.signup.dto';
 
 @Injectable()
 export class UserService {
@@ -32,5 +33,13 @@ export class UserService {
       throw new UserException(`User with id '${id}' does not exist`, HttpStatus.NOT_FOUND);
     }
     return user;
+  }
+
+  async createNewUser(user: UserSignUpDto): Promise<User> {
+    const createdUser = this.usersRepository.createNewUser(user,user.password)
+    if(!createdUser){
+      throw new UserException('Error during signup process',HttpStatus.BAD_REQUEST)
+    }
+    return user;   
   }
 }
