@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { UserRepository } from '../repositories/user.repository';
+import { UserException } from '../exception/user.exception';
 
 @Injectable()
 export class UserService {
@@ -28,14 +29,7 @@ export class UserService {
   async findUserById(id: User['id']): Promise<User> {
     const user = await this.usersRepository.findOne({ where: { id } });
     if (!user) {
-      throw new HttpException(
-        {
-          message: ['User not found'],
-          error: `User with id '${id}' does not exist`,
-          statusCode: HttpStatus.NOT_FOUND,
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new UserException(`User with id '${id}' does not exist`, HttpStatus.NOT_FOUND);
     }
     return user;
   }

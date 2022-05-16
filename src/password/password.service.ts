@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,HttpStatus } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PasswordRepository } from '../repositories/password.repository';
@@ -6,6 +6,7 @@ import { UserRepository } from '../repositories/user.repository';
 import { getCustomRepository } from 'typeorm';
 import { ChangePasswordDto,ChangeAlgorithmDto } from '../dtos/password.dto';
 import { Response } from '../model/response';
+import { PasswordException } from '../exception/password.exception';
 
 @Injectable()
 export class PasswordService {
@@ -19,7 +20,7 @@ export class PasswordService {
 
         // 1. Check new password and confirm password equality
         if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
-          console.error('passwords does not match')
+          throw new PasswordException('password does not matches', HttpStatus.BAD_REQUEST)
         }
     
         // 1. Get passwords from user table with relation
@@ -31,16 +32,16 @@ export class PasswordService {
 
         // Throw error if user does not have any passwords
         if (!user.passwords) {
-          // throw error
+            throw new PasswordException('user not found',HttpStatus.BAD_REQUEST)
         }
     
         // Check user's last three passwords, new password can not be same as last three passwords
         const isMatchedLastThreePasswords = await this.passwordRepository.checkLastThreePasswords(changePasswordDto.newPassword, user);
         if (isMatchedLastThreePasswords) {
-          //throw error
+            throw new PasswordException('passwords can not be same as your last three passwords',HttpStatus.BAD_REQUEST)
         }
     
-        // Change password
+        // Change password if everything is ok!
         return await this.passwordRepository.changePassword(changePasswordDto, user);
       }
     
