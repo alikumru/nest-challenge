@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1a428055-91a2-4ff5-9725-aee1954f936e",
+		"_postman_id": "fc57aca2-bbc9-4def-917b-9321187de7bd",
 		"name": "Foreside Assessment JS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -59,7 +59,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/users",
+							"raw": "http://localhost:3000/api/users/:userId",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -67,7 +67,14 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"users"
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "463a7f16-14da-4bb4-beea-566be05ff369"
+								}
 							]
 						}
 					},
@@ -76,6 +83,16 @@
 				{
 					"name": "Get LoggedIn User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ2M2E3ZjE2LTE0ZGEtNGJiNC1iZWVhLTU2NmJlMDVmZjM2OSIsImV4cCI6MTY1Mjc3MjI5OCwiZW1haWwiOiJ1c2VyMUBmb3Jlc2lkZS5ubCIsImlhdCI6MTY1Mjc2Njg5OH0.jDSQxLSB8vJ2kyfVRjSCvBaZaKw4uIjnuplvqOIf5NI",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -102,10 +119,19 @@
 				{
 					"name": "Authenticate User",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"user1@foreside.nl\",\n    \"password\":\"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "http://localhost:3000/api/users",
+							"raw": "http://localhost:3000/api/authenticate",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -113,7 +139,92 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"users"
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Passwords",
+			"item": [
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ2M2E3ZjE2LTE0ZGEtNGJiNC1iZWVhLTU2NmJlMDVmZjM2OSIsImV4cCI6MTY1Mjc3MjI5OCwiZW1haWwiOiJ1c2VyMUBmb3Jlc2lkZS5ubCIsImlhdCI6MTY1Mjc2Njg5OH0.jDSQxLSB8vJ2kyfVRjSCvBaZaKw4uIjnuplvqOIf5NI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"newPassword\": \"Password123!!\",\n    \"confirmPassword\":\"Password123!!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/password/changePassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"password",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Hash Algorithm",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ2M2E3ZjE2LTE0ZGEtNGJiNC1iZWVhLTU2NmJlMDVmZjM2OSIsImV4cCI6MTY1Mjc3MjI5OCwiZW1haWwiOiJ1c2VyMUBmb3Jlc2lkZS5ubCIsImlhdCI6MTY1Mjc2Njg5OH0.jDSQxLSB8vJ2kyfVRjSCvBaZaKw4uIjnuplvqOIf5NI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"algorithm\": \"bcrypt\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/password/changeHashAlgorithm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"password",
+								"changeHashAlgorithm"
 							]
 						}
 					},
